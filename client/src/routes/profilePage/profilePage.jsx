@@ -24,7 +24,7 @@ function ProfilePage() {
     console.log(postId);
     try {
       await apiRequest.delete(`/posts/${postId}`);
-      navigate(0); // Refresh the page
+      navigate(0);
     } catch (err) {
       console.log(err);
     }
@@ -64,15 +64,22 @@ function ProfilePage() {
             <span>
               E-mail: <b>{currentUser.email}</b>
             </span>
-            <span>User Type: <b>{currentUser.userType}</b></span>
+            <span>
+              User Type: <b>{currentUser.userType}</b>
+            </span>
             <button onClick={handleLogout}>Logout</button>
           </div>
-          <div className="title">
-            <h1>My List</h1>
-            <Link to="/add">
-              <button>Create New Post</button>
-            </Link>
-          </div>
+
+          {/* Allow only Agents to create a post */}
+          {currentUser.userType === "Agent" && (
+            <div className="title">
+              <h1>My List</h1>
+              <Link to="/add">
+                <button>Create New Post</button>
+              </Link>
+            </div>
+          )}
+
           <Suspense fallback={<p>Loading...</p>}>
             <Await
               resolve={data.postResponse}
@@ -87,6 +94,7 @@ function ProfilePage() {
               )}
             </Await>
           </Suspense>
+
           <div className="title">
             <h1>Saved List</h1>
           </div>
