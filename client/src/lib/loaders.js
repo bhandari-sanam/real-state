@@ -21,15 +21,18 @@ export const profilePageLoader = async () => {
 };
 
 export const agentPageLoader = async () => {
-  const response = await apiRequest.get("/users");
-  return response.data;
-};
-
-export const agentDetailPageLoader = async ({ params }) => {
-  const agentResponse = await apiRequest.get(`/users/${params.id}`);
+  const response = await apiRequest.get("/users/agents");
   return {
-    agent: agentResponse.data.user,
-    posts: agentResponse.data.posts,
+    agents: response.data,
   };
 };
 
+export const agentDetailPageLoader = async ({ params }) => {
+  const agentResponse = await apiRequest.get(
+    `/users/agents/${params.id}/posts`
+  );
+  return {
+    agent: agentResponse.data.agent, // Ensure response structure matches backend
+    posts: agentResponse.data.posts,
+  };
+};

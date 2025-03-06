@@ -37,7 +37,7 @@ function ProfilePage() {
     }
     try {
       await apiRequest.post("/users/save", { postId });
-      navigate(0); // Refresh the page to update the saved status
+      navigate(0);
     } catch (err) {
       console.log(err);
     }
@@ -64,6 +64,7 @@ function ProfilePage() {
             <span>
               E-mail: <b>{currentUser.email}</b>
             </span>
+            <span>User Type: <b>{currentUser.userType}</b></span>
             <button onClick={handleLogout}>Logout</button>
           </div>
           <div className="title">

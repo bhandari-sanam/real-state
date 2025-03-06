@@ -69,9 +69,14 @@ model User {
   email      String      @unique
   username   String      @unique
   password   String
+  userType   UserType    @default(Buyer) // Default userType
   avatar     String?
   createdAt  DateTime    @default(now())
   posts      Post[]
   savedPosts SavedPost[]
 }
 
+enum UserType {
+  Agent
+  Buyer
+}

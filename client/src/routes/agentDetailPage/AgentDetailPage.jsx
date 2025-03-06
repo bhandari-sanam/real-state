@@ -12,10 +12,9 @@ function AgentDetailPage() {
         <p>{agent.phone}</p>
         <p>{agent.address}</p>
         <p>{agent.email}</p>
-        <p>{agent.verified_by}</p>
       </div>
       <div className="agentPosts">
-        <h2>Posts by {agent.username}</h2>
+        <h2>Posted Properties</h2>
         <div className="postList">
           {posts.map((post) => (
             <Link to={`/${post.id}`} key={post.id} className="postCard">

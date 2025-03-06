@@ -2,7 +2,7 @@ import { Link, useLoaderData } from "react-router-dom";
 import "./agentPage.scss";
 
 function AgentPage() {
-  const agents = useLoaderData();
+  const { agents } = useLoaderData();
 
   return (
     <div className="agentPage">
@@ -13,9 +13,6 @@ function AgentPage() {
             <img src={agent.avatar || "/noavatar.jpg"} alt={agent.username} />
             <h2>{agent.username}</h2>
             <p>{agent.email}</p>
-            <p>{agent.phone}</p>
-            <p>{agent.address}</p>
-            <p>{agent.verified_by}</p>
           </Link>
         ))}
       </div>

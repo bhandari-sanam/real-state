@@ -1,88 +1,64 @@
-// src/pages/ContactPage.js
-import React, { useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
-function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+// Create a context to manage the script loading state
+const CloudinaryScriptContext = createContext();
 
-  const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+function UploadWidget({ uwConfig, setPublicId, setState }) {
+  const [loaded, setLoaded] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send the message.");
+  useEffect(() => {
+    // Check if the script is already loaded
+    if (!loaded) {
+      const uwScript = document.getElementById("uw");
+      if (!uwScript) {
+        // If not loaded, create and load the script
+        const script = document.createElement("script");
+        script.setAttribute("async", "");
+        script.setAttribute("id", "uw");
+        script.src = "https://upload-widget.cloudinary.com/global/all.js";
+        script.addEventListener("load", () => setLoaded(true));
+        document.body.appendChild(script);
+      } else {
+        // If already loaded, update the state
+        setLoaded(true);
       }
+    }
+  }, [loaded]);
 
-      const result = await response.json();
-      setStatus(result.message);
-      setFormData({ name: "", email: "", message: "" });
-    } catch (err) {
-      setError("Error sending message. Please try again.");
-    } finally {
-      setLoading(false);
+  const initializeCloudinaryWidget = () => {
+    if (loaded) {
+      var myWidget = window.cloudinary.createUploadWidget(
+        uwConfig,
+        (error, result) => {
+          if (!error && result && result.event === "success") {
+            console.log("Done! Here is the image info: ", result.info);
+            setState((prev) => [...prev, result.info.secure_url]);
+          }
+        }
+      );
+
+      document.getElementById("upload_widget").addEventListener(
+        "click",
+        function () {
+          myWidget.open();
+        },
+        false
+      );
     }
   };
 
   return (
-    <div className="contactPage">
-      <h1>Contact Us</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Name</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <label>Message</label>
-        <textarea
-          name="message"
-          value={formData.message}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send Message"}
-        </button>
-      </form>
-
-      {status && <p className="statusMessage success">{status}</p>}
-      {error && <p className="statusMessage error">{error}</p>}
-    </div>
+    <CloudinaryScriptContext.Provider value={{ loaded }}>
+      <button
+        id="upload_widget"
+        className="cloudinary-button"
+        onClick={initializeCloudinaryWidget}
+      >
+        Upload
+      </button>
+    </CloudinaryScriptContext.Provider>
   );
 }
 
-export default ContactPage;
+export default UploadWidget;
+export { CloudinaryScriptContext };

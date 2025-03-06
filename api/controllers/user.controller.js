@@ -1,9 +1,12 @@
 import prisma from "../lib/prisma.js";
 import bcrypt from "bcrypt";
 
-export const getUsers = async (req, res) => {
+
+// Get all agents
+export const getAgents = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
+    const agents = await prisma.user.findMany({
+      where: { userType: "Agent" },
       select: {
         id: true,
         username: true,
@@ -11,10 +14,49 @@ export const getUsers = async (req, res) => {
         avatar: true,
       },
     });
-    res.status(200).json(users);
+
+    res.status(200).json(agents);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Failed to get users" });
+    console.error(err);
+    res.status(500).json({ message: "Failed to get agents" });
+  }
+};
+
+// Get all posts created by an agent
+export const getAgentPosts = async (req, res) => {
+  try {
+    const { agentId } = req.params;
+
+    // Check if the agent exists
+    const agent = await prisma.user.findUnique({
+      where: { id: agentId, userType: "Agent" },
+      select: { id: true, username: true, email: true, avatar: true },
+    });
+
+    if (!agent) {
+      return res.status(404).json({ message: "Agent not found" });
+    }
+
+    // Fetch all posts created by the agent
+    const posts = await prisma.post.findMany({
+      where: { userId: agentId },
+      select: {
+        id: true,
+        title: true,
+        price: true,
+        images: true,
+        address: true,
+        city: true,
+        bedroom: true,
+        bathroom: true,
+        createdAt: true,
+      },
+    });
+
+    res.status(200).json({ agent, posts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch agent's posts" });
   }
 };
 
@@ -134,28 +176,6 @@ export const profilePosts = async (req, res) => {
 
     const savedPosts = saved.map((item) => item.post);
     res.status(200).json({ userPosts, savedPosts });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Failed to get profile posts!" });
-  }
-};
-
-export const getNotificationNumber = async (req, res) => {
-  const tokenUserId = req.userId;
-  try {
-    const number = await prisma.chat.count({
-      where: {
-        userIDs: {
-          hasSome: [tokenUserId],
-        },
-        NOT: {
-          seenBy: {
-            hasSome: [tokenUserId],
-          },
-        },
-      },
-    });
-    res.status(200).json(number);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to get profile posts!" });

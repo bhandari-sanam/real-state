@@ -8,7 +8,7 @@ function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const {updateUser} = useContext(AuthContext)
+  const { updateUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -18,36 +18,35 @@ function Login() {
     setError("");
     const formData = new FormData(e.target);
 
-    const username = formData.get("username");
+    const email = formData.get("email"); // Updated
     const password = formData.get("password");
 
     try {
       const res = await apiRequest.post("/auth/login", {
-        username,
+        email,
         password,
       });
 
-      updateUser(res.data)
+      updateUser(res.data);
 
       navigate("/");
     } catch (err) {
-      setError(err.response.data.message);
+      setError(err.response?.data?.message || "Login failed!");
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="login">
       <div className="formContainer">
         <form onSubmit={handleSubmit}>
           <h1>Welcome back</h1>
           <input
-            name="username"
+            name="email" // Updated
             required
-            minLength={3}
-            maxLength={20}
-            type="text"
-            placeholder="Username"
+            type="email" // Updated to "email"
+            placeholder="Email" // Updated placeholder
           />
           <input
             name="password"
@@ -57,11 +56,11 @@ function Login() {
           />
           <button disabled={isLoading}>Login</button>
           {error && <span>{error}</span>}
-          <Link to="/register">{"Don't"} you have an account?</Link>
+          <Link to="/register">{"Don't"} have an account?</Link>
         </form>
       </div>
       <div className="imgContainer">
-        <img src="/bg.png" alt="" />
+        <img src="/bg.png" alt="Background" />
       </div>
     </div>
   );
