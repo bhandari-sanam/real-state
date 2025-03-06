@@ -1,7 +1,6 @@
 import prisma from "../lib/prisma.js";
 import bcrypt from "bcrypt";
 
-
 // Get all agents
 export const getAgents = async (req, res) => {
   try {
@@ -57,6 +56,63 @@ export const getAgentPosts = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch agent's posts" });
+  }
+};
+
+// Post feedback for an agent
+export const postAgentFeedback = async (req, res) => {
+  try {
+    const { agentId } = req.params;
+    const { content } = req.body;
+    const userId = req.body.user.id;
+
+    const feedback = await prisma.feedback.create({
+      data: {
+        content,
+        agentId,
+        userId,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    res.status(201).json(feedback);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to submit feedback" });
+  }
+};
+
+// Get feedback for an agent
+export const getAgentFeedback = async (req, res) => {
+  try {
+    const { agentId } = req.params;
+
+    const feedbacks = await prisma.feedback.findMany({
+      where: { agentId },
+      include: {
+        user: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json({ feedbacks });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to get feedback" });
   }
 };
 

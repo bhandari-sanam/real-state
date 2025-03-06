@@ -12,11 +12,10 @@ function Navbar() {
     <nav>
       <div className="left">
         <a href="/" className="logo">
-          <img src="/logo.png" alt="" />
+          <img src="/logo.png" alt="logo" />
           <span>EstateHunt</span>
         </a>
         <a href="/">Home</a>
-        <a href="/">About</a>
         <a href="/agents">Agents</a>
       </div>
       <div className="right">
@@ -30,7 +29,7 @@ function Navbar() {
           </div>
         ) : (
           <>
-            <a href="/login">Sign in</a>
+            <a href="/login">Log in</a>
             <a href="/register" className="register">
               Sign up
             </a>
@@ -45,9 +44,8 @@ function Navbar() {
         </div>
         <div className={open ? "menu active" : "menu"}>
           <a href="/">Home</a>
-          <a href="/">About</a>
           <a href="/agents">Agents</a>
-          <a href="/">Sign in</a>
+          <a href="/">Log in</a>
           <a href="/">Sign up</a>
         </div>
       </div>

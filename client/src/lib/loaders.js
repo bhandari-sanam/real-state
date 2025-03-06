@@ -31,8 +31,13 @@ export const agentDetailPageLoader = async ({ params }) => {
   const agentResponse = await apiRequest.get(
     `/users/agents/${params.id}/posts`
   );
+  const feedbackResponse = await apiRequest.get(
+    `/users/agents/${params.id}/feedback`
+  );
+
   return {
-    agent: agentResponse.data.agent, // Ensure response structure matches backend
+    agent: agentResponse.data.agent,
     posts: agentResponse.data.posts,
+    feedbacks: feedbackResponse.data.feedbacks,
   };
 };

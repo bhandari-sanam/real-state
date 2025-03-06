@@ -35,7 +35,6 @@ enum Type {
 enum Property {
   apartment
   house
-  condo
   land
 }
 
@@ -65,18 +64,32 @@ model SavedPost {
 }
 
 model User {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  email      String      @unique
-  username   String      @unique
-  password   String
-  userType   UserType    @default(Buyer) // Default userType
-  avatar     String?
-  createdAt  DateTime    @default(now())
-  posts      Post[]
-  savedPosts SavedPost[]
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  email             String      @unique
+  username          String      @unique
+  password          String
+  userType          UserType    @default(Buyer) // Default userType
+  avatar            String?
+  createdAt         DateTime    @default(now())
+  posts             Post[]
+  savedPosts        SavedPost[]
+  givenFeedbacks    Feedback[]  @relation("FeedbackAuthor") // Feedbacks given by this user
+  receivedFeedbacks Feedback[]  @relation("FeedbackReceiver") // Feedbacks received by this user (if Agent)
 }
 
 enum UserType {
   Agent
   Buyer
+}
+
+model Feedback {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(name: "FeedbackAuthor", fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  agent   User   @relation(name: "FeedbackReceiver", fields: [agentId], references: [id])
+  agentId String @db.ObjectId
 }
