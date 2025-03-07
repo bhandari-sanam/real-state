@@ -57,7 +57,6 @@ function App() {
           path: "/register",
           element: <Register />,
         },
-        
       ],
     },
     {
@@ -75,6 +74,10 @@ function App() {
         },
         {
           path: "/add",
+          element: <NewPostPage />,
+        },
+        {
+          path: "/edit/:id",
           element: <NewPostPage />,
         },
       ],
